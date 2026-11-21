@@ -421,6 +421,54 @@ h1, h2, h3, p { margin: 0; }
   .ring-center .rn { font-size: 32px; }
 }
 
+/* ---------- 登录 / 注册 ---------- */
+.auth { display: flex; flex-direction: column; gap: 14px; padding-top: 26px; }
+.auth-brand { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 8px 0 2px; text-align: center; }
+.auth-logo {
+  width: 76px; height: 76px; border-radius: 26px; display: grid; place-items: center; font-size: 38px;
+  background: #fff; border: 1px solid #ffe9f1; box-shadow: var(--shadow);
+}
+.auth-title { font-size: 30px; font-weight: 800; letter-spacing: 6px; text-indent: 6px; color: #4b3340; }
+.auth-sub { font-size: 12.5px; color: var(--ink2); }
+.auth-card { padding: 16px 16px 18px; }
+.auth-seg { display: flex; gap: 6px; background: #fff5f9; border-radius: 999px; padding: 4px; margin-bottom: 14px; }
+.aseg { flex: 1 1 0; border: none; background: none; border-radius: 999px; padding: 9px 0; font-size: 14px; font-weight: 700; color: #b98aa1; cursor: pointer; }
+.aseg.on { background: linear-gradient(135deg, #ffb6d2, #ff90ba); color: #fff; box-shadow: 0 6px 14px rgba(255, 144, 186, .28); }
+.field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 11px; min-width: 0; }
+.field > label, .field > .lab { font-size: 12.5px; font-weight: 700; color: #8b7681; }
+.in {
+  width: 100%; border: 1px solid var(--pink-line); border-radius: 14px; background: #fffdfe;
+  padding: 11px 12px; font-size: 15px; color: var(--ink); font-family: inherit;
+}
+.in::placeholder { color: #c9b3bd; }
+.field-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pills { display: flex; gap: 6px; }
+.pill {
+  flex: 1 1 0; min-width: 0; border: 1px solid var(--pink-line); background: #fff; border-radius: 999px;
+  padding: 9px 0; font-size: 13.5px; color: #a2547a; cursor: pointer;
+}
+.pill.on { background: #ffd9e7; border-color: #ffbfd6; font-weight: 800; color: #a63e69; }
+.auth-err { color: #d1436b; background: #fff0f4; border-radius: 12px; padding: 8px 11px; font-size: 12.5px; margin: 2px 0 10px; }
+.auth-warn { color: #b5762c; background: #fff6ec; border-radius: 12px; padding: 9px 11px; font-size: 12px; margin: 10px 0 0; }
+.auth-switch { text-align: center; font-size: 12.5px; color: var(--ink2); margin-top: 12px; }
+.link {
+  border: none; background: none; color: var(--pink-deep); font-weight: 800; font-size: 12.5px;
+  cursor: pointer; padding: 0 2px; text-decoration: underline; text-underline-offset: 3px;
+}
+.auth-note { text-align: center; font-size: 11px; line-height: 1.65; color: #a8929c; padding: 0 10px 10px; }
+.auth-mode .phone { padding-bottom: 26px; }
+.auth-mode .topbar { display: none; }
+
+/* ---------- 空状态 ---------- */
+.empty-week {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: #fff7fb; border-radius: 14px; padding: 10px 12px; margin-top: 10px;
+  font-size: 12.5px; color: #a2547a;
+}
+.meal-empty { display: flex; align-items: center; gap: 10px; background: var(--cream); border-radius: 16px; padding: 12px 14px; font-size: 13px; color: #b096a3; }
+
+.auth-mode .tabbar { display: none; }
+
 </style>
 </head>
 <body>
@@ -438,10 +486,8 @@ h1, h2, h3, p { margin: 0; }
 window.SHIKE = window.SHIKE || {};
 
 window.SHIKE.DATA = {
-  version: 1,
+  version: 2,
   appName: '食刻',
-  targets: { kcal: 1407, carb: 193.5, protein: 52.8, fat: 46.9 },
-  mealTargets: { '早餐': 422, '午餐': 563, '晚餐': 352, '加餐': 70 },
 
   /* 每项营养值均为「1 份」的量，unit 为默认份量单位，grams 为该份的克数 */
   foods: [
@@ -480,20 +526,12 @@ window.SHIKE.DATA = {
     { id: 'cherry', name: '圣女果', emoji: '🍅', alias: ['圣女果', '小番茄', '小西红柿'], unit: '份', grams: 150, kcal: 30, carb: 6, protein: 1, fat: 0.2, sugar: 4, oil: 0, proc: 'natural', tags: ['水果', '蔬菜'], price: 3, role: 'fruit' }
   ],
 
-  /* 今天（参考图口径）：早餐 220+250=470，午餐 268，晚餐 100，合计 838 */
-  seedToday: { ex: 0, meals: { '早餐': [['coffee', 1], ['toast', 1]], '午餐': [['tomatoEgg', 1]], '晚餐': [['apple', 1]], '加餐': [] } },
+  /* 新用户从空开始：没有任何打卡数据，一切计数从 0 起 */
+  profileDefaults: { gender: '女', age: 20, height: 165, weight: 55, activity: '中', goal: '维持' },
+  activityOptions: ['低', '中', '高'],
+  goalOptions: ['减脂', '维持', '增肌'],
 
-  /* 前 6 天历史，保证周报有 7 根柱子 */
-  seedHistory: [
-    { d: -6, meals: { '早餐': [['soyMilk', 1], ['corn', 1]], '午餐': [['tomatoNoodle', 1]], '晚餐': [['sweetPotato', 1], ['milk', 1], ['nuts', 1]] } },
-    { d: -5, meals: { '早餐': [['coffee', 1], ['cake', 1]], '午餐': [['chiliPork', 1], ['rice', 1]], '晚餐': [['broccoli', 1], ['egg', 2]] } },
-    { d: -4, meals: { '早餐': [['egg', 1]], '午餐': [['friedChicken', 1], ['cola', 1]], '晚餐': [['friedRice', 1]] } },
-    { d: -3, meals: { '早餐': [['yogurt', 1], ['banana', 1]], '午餐': [['beefTomato', 1], ['rice', 1], ['greens', 1]], '晚餐': [['cucumber', 1], ['sandwich', 1]] } },
-    { d: -2, meals: { '早餐': [['soyMilk', 1], ['toast', 1]], '午餐': [['mala', 1]], '晚餐': [['tomatoEgg', 1], ['rice', 1]], '加餐': [['bubbleTea', 1]] } },
-    { d: -1, meals: { '早餐': [['coffee', 1], ['egg', 2]], '午餐': [['braisedChicken', 1], ['rice', 1]], '晚餐': [['greens', 1], ['multigrain', 1]] } }
-  ],
-
-  /* 营养师后台待审队列（演示用的 AI 生成菜谱卡） */
+  /* 营养师后台的全局菜谱库与推荐规则（所有账号共用） */
   recipeQueue: [
     { id: 'r1', dish: '香菇滑鸡糙米饭', kcal: 520, protein: 28, oil: 1, reason: '蛋白质充足、油脂适中，适合作为午间主餐', status: 'approved', rejectReason: '' },
     { id: 'r2', dish: '菠菜鸡蛋豆腐汤', kcal: 160, protein: 12, oil: 1, reason: '清淡低油，可补钙与植物蛋白，适合晚餐搭配', status: 'pending', rejectReason: '' },
@@ -511,8 +549,6 @@ window.SHIKE.DATA = {
     '晚餐': { on: true, time: '18:10' },
     '加餐': { on: false, time: '15:30' }
   },
-
-  profile: { name: '小食同学', goal: '均衡饮食', lastWeekAvg: 1352 },
 
   rejectReasons: ['油脂偏高', '蛋白质不足', '热量超标', '重复菜品', '食材不合规'],
 
@@ -534,12 +570,15 @@ window.SHIKE.DATA = {
 </script>
 <script>
 /* app/engine.js */
-/* 食刻 · 规则引擎：解析、汇总、风险扫描、配餐、周报、持久化（全部本地计算） */
+/* 食刻 · 规则引擎：解析、汇总、风险扫描、配餐、周报、账号与本地存储（全部本地计算） */
 window.SHIKE = window.SHIKE || {};
 window.SHIKE.engine = (function () {
   var D = window.SHIKE.DATA;
   var MEALS = ['早餐', '午餐', '晚餐', '加餐'];
-  var KEY = 'shike.state.v1';
+  var MEAL_PCT = { '早餐': 0.3, '午餐': 0.4, '晚餐': 0.25, '加餐': 0.05 };
+  var ACT = { '低': 1.3, '中': 1.5, '高': 1.7 };
+  var GOAL = { '减脂': 0.85, '维持': 1, '增肌': 1.1 };
+  var KEY = 'shike.v2';
   var BY_ID = {};
   var ALIAS = [];
   var seq = 0;
@@ -555,6 +594,7 @@ window.SHIKE.engine = (function () {
   function r1(n) { return Math.round(n * 10) / 10; }
   function fmt(n) { var v = r1(n); return v % 1 === 0 ? String(v) : v.toFixed(1); }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function clone(o) { return JSON.parse(JSON.stringify(o)); }
 
   /* ---------- 日期 ---------- */
   function dateKey(offset) {
@@ -697,7 +737,7 @@ window.SHIKE.engine = (function () {
 
   /* ---------- 汇总 ---------- */
   function itemsTotals(items) {
-    var t = { kcal: 0, carb: 0, protein: 0, fat: 0, sugar: 0, asugar: 0 };
+    var t = { kcal: 0, carb: 0, protein: 0, fat: 0, sugar: 0, asugar: 0, count: items.length };
     items.forEach(function (it) {
       t.kcal += it.kcal; t.carb += it.carb; t.protein += it.protein; t.fat += it.fat;
       t.sugar += it.sugar; t.asugar += addSugarOf(it);
@@ -707,20 +747,23 @@ window.SHIKE.engine = (function () {
     return t;
   }
   function emptyDay() { return { meals: { '早餐': [], '午餐': [], '晚餐': [], '加餐': [] }, ex: 0 }; }
+  function dayOf(user, offset) {
+    var days = (user && user.days) || {};
+    return days[dateKey(offset)] || emptyDay();
+  }
   function dayTotals(day) {
     day = day || emptyDay();
-    var t = { kcal: 0, carb: 0, protein: 0, fat: 0, sugar: 0, asugar: 0, ex: day.ex || 0, meals: {}, flags: [] };
+    var t = { kcal: 0, carb: 0, protein: 0, fat: 0, sugar: 0, asugar: 0, ex: day.ex || 0, meals: {}, flags: [], count: 0 };
     MEALS.forEach(function (meal) {
       var items = (day.meals && day.meals[meal]) || [];
       var s = itemsTotals(items);
       s.items = items;
       t.meals[meal] = s;
       t.kcal += s.kcal; t.carb += s.carb; t.protein += s.protein; t.fat += s.fat; t.sugar += s.sugar; t.asugar += s.asugar;
+      t.count += items.length;
       groupRisks(items).forEach(function (r) { r.meal = meal; t.flags.push(r); });
     });
     t.kcal = r0(t.kcal); t.carb = r1(t.carb); t.protein = r1(t.protein); t.fat = r1(t.fat); t.sugar = r1(t.sugar); t.asugar = r1(t.asugar);
-    t.left = Math.max(0, D.targets.kcal + t.ex - t.kcal);
-    t.ratio = Math.min(1, t.kcal / (D.targets.kcal + t.ex));
     return t;
   }
   function riskSummary(totals) {
@@ -728,6 +771,31 @@ window.SHIKE.engine = (function () {
     totals.flags.forEach(function (f) { if (c[f.kind] != null) c[f.kind] += 1; });
     return { counts: c, total: totals.flags.length, list: totals.flags, sugar: totals.asugar };
   }
+
+  /* ---------- 个人目标（Mifflin-St Jeor × 活动量 × 目标系数） ---------- */
+  function bmr(profile) {
+    var p = profile || {};
+    var w = +p.weight || D.profileDefaults.weight;
+    var h = +p.height || D.profileDefaults.height;
+    var a = +p.age || D.profileDefaults.age;
+    return p.gender === '男' ? 10 * w + 6.25 * h - 5 * a + 5 : 10 * w + 6.25 * h - 5 * a - 161;
+  }
+  function targetsOf(profile) {
+    var p = profile || {};
+    var b = bmr(p);
+    var act = ACT[p.activity] || 1.5;
+    var gf = GOAL[p.goal] || 1;
+    var kcal = Math.round(b * act * gf);
+    if (kcal < 1000) kcal = 1000;
+    var protein = r1((+p.weight || D.profileDefaults.weight) * (p.goal === '减脂' ? 1.6 : 1.2));
+    var fat = r1(kcal * 0.25 / 9);
+    var carb = r1(Math.max(0, (kcal - protein * 4 - fat * 9) / 4));
+    return {
+      kcal: kcal, carb: carb, protein: protein, fat: fat, bmr: Math.round(b),
+      activity: act, goalFactor: gf, meal: Math.round(kcal * 0.4)
+    };
+  }
+  function mealTargetOf(tg, meal) { return Math.round((tg ? tg.kcal : 0) * (MEAL_PCT[meal] || 0)); }
 
   /* ---------- 配餐 ---------- */
   function reasonOf(f) {
@@ -748,11 +816,12 @@ window.SHIKE.engine = (function () {
     if (rules.canteenFirst && f.price > 0) s += 6;
     return s;
   }
-  function pairPlan(text, rules) {
+  function pairPlan(text, rules, tg) {
     var wanted = String(text || '').trim();
     var mainFood = matchFood(wanted);
     var main = mainFood ? makeItem(mainFood, 1, mainFood.unit) : estimateItem(wanted || '想吃的菜', 1, '份');
     rules = rules || {};
+    tg = tg || { kcal: 1400, meal: 563 };
     var heavy = main.kcal > 350;
     var spec = [
       { label: '主食', id: main.oil >= 3 ? 'corn' : (main.proc === 'ultra' ? 'multigrain' : 'rice'), grams: heavy ? 100 : 150 },
@@ -767,7 +836,7 @@ window.SHIKE.engine = (function () {
     });
     var slotKcal = slots.reduce(function (a, b) { return a + b.item.kcal; }, 0);
     var total = r0(main.kcal + slotKcal);
-    var target = D.mealTargets['午餐'];
+    var target = tg.meal;
     var ranked = D.foods.filter(function (f) { return f.price > 0 && f.id !== main.foodId; })
       .map(function (f) { return { f: f, s: scoreOf(f, rules) }; })
       .filter(function (x) { return x.s > -900; })
@@ -796,54 +865,76 @@ window.SHIKE.engine = (function () {
   }
 
   /* ---------- 周报 ---------- */
-  function weekly(state) {
-    var days = [], sum = { kcal: 0, carb: 0, protein: 0, fat: 0, sugar: 0 }, proteinOk = 0, flags = 0, sugarDays = 0;
+  function weekly(user, tg) {
+    tg = tg || targetsOf(user && user.profile);
+    var days = [], sum = { kcal: 0, carb: 0, protein: 0, fat: 0, sugar: 0 };
+    var proteinOk = 0, flags = 0, sugarDays = 0, recorded = 0;
     for (var i = -6; i <= 0; i++) {
-      var key = dateKey(i);
-      var t = dayTotals(state.days[key]);
-      days.push({ key: key, label: i === 0 ? '今天' : weekday(i), date: convDate(i), kcal: t.kcal, carb: t.carb, protein: t.protein, fat: t.fat, sugar: t.sugar, addSugar: t.asugar, flags: t.flags.length, isToday: i === 0 });
+      var t = dayTotals(dayOf(user, i));
+      if (t.kcal > 0) recorded += 1;
+      days.push({
+        key: dateKey(i), label: i === 0 ? '今天' : weekday(i), date: convDate(i),
+        kcal: t.kcal, carb: t.carb, protein: t.protein, fat: t.fat, sugar: t.sugar, addSugar: t.asugar,
+        flags: t.flags.length, count: t.count, isToday: i === 0
+      });
       sum.kcal += t.kcal; sum.carb += t.carb; sum.protein += t.protein; sum.fat += t.fat; sum.sugar += t.asugar;
-      if (t.protein >= D.targets.protein) proteinOk += 1;
+      if (t.kcal > 0 && t.protein >= tg.protein) proteinOk += 1;
       flags += t.flags.length;
       if (t.asugar >= 25) sugarDays += 1;
     }
-    var avg = r0(sum.kcal / 7);
-    var prev = (state.profile && state.profile.lastWeekAvg) || 1352;
-    var vsWeek = Math.round((avg - prev) / prev * 100);
+    var hasData = recorded > 0;
+    var avg = recorded ? r0(sum.kcal / recorded) : 0;
+    var prevSum = 0, prevDays = 0;
+    for (var j = -13; j <= -7; j++) {
+      var pt = dayTotals(dayOf(user, j));
+      if (pt.kcal > 0) prevDays += 1;
+      prevSum += pt.kcal;
+    }
+    var prev = prevDays ? r0(prevSum / prevDays) : null;
+    var vsWeek = prev ? Math.round((avg - prev) / prev * 100) : null;
     var eCarb = sum.carb * 4, eProt = sum.protein * 4, eFat = sum.fat * 9;
-    var eSum = eCarb + eProt + eFat || 1;
+    var eSum = eCarb + eProt + eFat;
     var structure = [
-      { name: '碳水供能', pct: Math.round(eCarb / eSum * 100), band: '50~65%', color: 'var(--carb)' },
-      { name: '蛋白质供能', pct: Math.round(eProt / eSum * 100), band: '10~20%', color: 'var(--prot)' },
-      { name: '脂肪供能', pct: Math.round(eFat / eSum * 100), band: '20~30%', color: 'var(--fat)' }
+      { name: '碳水供能', pct: eSum ? Math.round(eCarb / eSum * 100) : 0, band: '50~65%', color: 'var(--carb)' },
+      { name: '蛋白质供能', pct: eSum ? Math.round(eProt / eSum * 100) : 0, band: '10~20%', color: 'var(--prot)' },
+      { name: '脂肪供能', pct: eSum ? Math.round(eFat / eSum * 100) : 0, band: '20~30%', color: 'var(--fat)' }
     ];
-    var pool = [];
-    if (structure[0].pct > 65) pool.push('碳水供能占比偏高，把一碗白米饭换成半碗米饭＋一根玉米试试');
-    if (structure[1].pct < 15) pool.push('蛋白质供能偏少，每餐加一个鸡蛋或一杯无糖酸奶，一天就能补 15 克');
-    if (proteinOk < 5) pool.push('本周只有 ' + proteinOk + ' 天蛋白质达标，早餐建议固定「蛋＋奶」组合');
-    if (flags >= 6) pool.push('高糖高油标记 ' + flags + ' 次，先把奶茶从每天一杯改成每周两杯');
-    if (sugarDays >= 3) pool.push('有 ' + sugarDays + ' 天添加糖超过 25 克，含糖饮料换成无糖茶或气泡水');
-    if (avg > D.targets.kcal + 120) pool.push('平均摄入比推荐值高 ' + (avg - D.targets.kcal) + ' 千卡，晚餐主食减 1/3 最容易坚持');
-    if (avg < D.targets.kcal - 250) pool.push('平均摄入偏低，容易晚上饿，加餐可以放一杯牛奶或一把坚果');
-    var fallback = ['每天固定吃一份深绿色蔬菜，一周就能多补膳食纤维', '把 30 分钟快走写进课表，和吃饭时间绑在一起更容易坚持', '食堂打菜先素后荤，餐盘一半留给蔬菜'];
-    fallback.forEach(function (s) { if (pool.length < 3) pool.push(s); });
-    var suggestions = pool.slice(0, 3);
-    var tone = avg > D.targets.kcal ? '略高于' : '略低于';
-    var comment = '这一周平均每天 ' + avg + ' 千卡，' + tone + '推荐摄入（' + D.targets.kcal + ' 千卡）。' +
-      (flags >= 5 ? '高糖高油的次数偏多，' : '整体油脂控制得还不错，') +
-      (proteinOk >= 4 ? '蛋白质达标 ' + proteinOk + ' 天，继续保持。' : '蛋白质达标只有 ' + proteinOk + ' 天，明天早餐先加一个鸡蛋。') +
-      '结构上碳水 ' + structure[0].pct + '%、蛋白质 ' + structure[1].pct + '%、脂肪 ' + structure[2].pct + '%，' +
-      (structure[2].pct > 30 ? '脂肪偏高，点菜时避开「干煸、香锅、油炸」。' : '比例接近推荐区间。');
+    var suggestions = [];
+    if (!hasData) {
+      suggestions = ['先连续记录 3 天，周报才会有意义'];
+    } else {
+      var pool = [];
+      if (structure[0].pct > 65) pool.push('碳水供能占比偏高，把一碗白米饭换成半碗米饭＋一根玉米试试');
+      if (structure[1].pct < 15) pool.push('蛋白质供能偏少，每餐加一个鸡蛋或一杯无糖酸奶，一天就能补 15 克');
+      if (proteinOk < 5) pool.push('本周只有 ' + proteinOk + ' 天蛋白质达标，早餐建议固定「蛋＋奶」组合');
+      if (flags >= 6) pool.push('高糖高油标记 ' + flags + ' 次，先把奶茶从每天一杯改成每周两杯');
+      if (sugarDays >= 3) pool.push('有 ' + sugarDays + ' 天添加糖超过 25 克，含糖饮料换成无糖茶或气泡水');
+      if (avg > tg.kcal + 120) pool.push('平均摄入比推荐值高 ' + (avg - tg.kcal) + ' 千卡，晚餐主食减 1/3 最容易坚持');
+      if (avg < tg.kcal - 250) pool.push('平均摄入偏低，容易晚上饿，加餐可以放一杯牛奶或一把坚果');
+      ['每天固定吃一份深绿色蔬菜，一周就能多补膳食纤维', '把 30 分钟快走写进课表，和吃饭时间绑在一起更容易坚持', '食堂打菜先素后荤，餐盘一半留给蔬菜']
+        .forEach(function (s) { if (pool.length < 3) pool.push(s); });
+      suggestions = pool.slice(0, 3);
+    }
+    var comment;
+    if (!hasData) {
+      comment = '这周还没有打卡记录，先记今天的一餐吧，有了数据我才能帮你看结构和热量。';
+    } else {
+      comment = '这一周平均每天 ' + avg + ' 千卡，' + (avg > tg.kcal ? '略高于' : '略低于') + '推荐摄入（' + tg.kcal + ' 千卡）。' +
+        (flags >= 5 ? '高糖高油的次数偏多，' : '整体油脂控制得还不错，') +
+        (proteinOk >= 4 ? '蛋白质达标 ' + proteinOk + ' 天，继续保持。' : '蛋白质达标只有 ' + proteinOk + ' 天，明天早餐先加一个鸡蛋。') +
+        '结构上碳水 ' + structure[0].pct + '%、蛋白质 ' + structure[1].pct + '%、脂肪 ' + structure[2].pct + '%，' +
+        (structure[2].pct > 30 ? '脂肪偏高，点菜时避开「干煸、香锅、油炸」。' : '比例接近推荐区间。');
+    }
     return {
       days: days, avg: avg, prev: prev, vsWeek: vsWeek, proteinOk: proteinOk, flags: flags,
       sugar: r1(sum.sugar), structure: structure, suggestions: suggestions, comment: comment,
-      target: D.targets.kcal
+      target: tg.kcal, mealTarget: tg.meal, hasData: hasData, recorded: recorded
     };
   }
 
-  /* ---------- 营养师后台 ---------- */
-  function recipeStats(state) {
-    var list = state.recipes || [], p = 0, a = 0, j = 0;
+  /* ---------- 营养师后台（全局菜谱库） ---------- */
+  function recipeStats(lib) {
+    var list = (lib && lib.recipes) || [], p = 0, a = 0, j = 0;
     list.forEach(function (r) {
       if (r.status === 'pending') p += 1;
       else if (r.status === 'approved') a += 1;
@@ -851,86 +942,205 @@ window.SHIKE.engine = (function () {
     });
     return { pending: p, approved: a, rejected: j, total: list.length, rate: (a + j) ? Math.round(j / (a + j) * 100) : 0 };
   }
-  function badgeText(state) {
-    var s = recipeStats(state);
+  function badgeText(lib) {
+    var s = recipeStats(lib);
     return '已通过 ' + s.approved + '/' + s.total + ' · 待审 ' + s.pending;
   }
 
-  /* ---------- 持久化 ---------- */
-  function dayFromPlan(plan) {
-    var day = { meals: {}, ex: plan.ex || 0 };
-    MEALS.forEach(function (m) {
-      var list = (plan.meals && plan.meals[m]) || [];
-      day.meals[m] = list.map(function (p) {
-        var f = BY_ID[p[0]];
-        return f ? makeItem(f, p[1], f.unit) : null;
-      }).filter(Boolean);
-    });
-    return day;
+  /* ---------- SHA-256（纯 JS 同步实现，不依赖 crypto.subtle） ---------- */
+  var K256 = [
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+  ];
+  function ror(x, n) { return (x >>> n) | (x << (32 - n)); }
+  function utf8Bytes(str) {
+    var out = [], i, c, cp;
+    for (i = 0; i < str.length; i++) {
+      c = str.charCodeAt(i);
+      if (c < 0x80) out.push(c);
+      else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 63));
+      else if (c < 0xd800 || c >= 0xe000) out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+      else {
+        i += 1;
+        cp = 0x10000 + ((c - 0xd800) << 10) + (str.charCodeAt(i) - 0xdc00);
+        out.push(0xf0 | (cp >> 18), 0x80 | ((cp >> 12) & 63), 0x80 | ((cp >> 6) & 63), 0x80 | (cp & 63));
+      }
+    }
+    return out;
   }
-  function seedState() {
-    var s = {
-      v: D.version,
-      profile: { name: D.profile.name, goal: D.profile.goal, lastWeekAvg: D.profile.lastWeekAvg },
-      reminders: JSON.parse(JSON.stringify(D.reminders)),
-      recipes: JSON.parse(JSON.stringify(D.recipeQueue)),
-      rules: JSON.parse(JSON.stringify(D.rules)),
-      days: {}
+  function sha256(str) {
+    var msg = utf8Bytes(String(str)), len = msg.length, i, j;
+    msg.push(0x80);
+    while (msg.length % 64 !== 56) msg.push(0);
+    var bits = len * 8, hi = Math.floor(bits / 4294967296), lo = bits >>> 0;
+    msg.push((hi >>> 24) & 255, (hi >>> 16) & 255, (hi >>> 8) & 255, hi & 255);
+    msg.push((lo >>> 24) & 255, (lo >>> 16) & 255, (lo >>> 8) & 255, lo & 255);
+    var H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+    var w = new Array(64);
+    for (i = 0; i < msg.length; i += 64) {
+      for (j = 0; j < 16; j++) w[j] = (msg[i + j * 4] << 24) | (msg[i + j * 4 + 1] << 16) | (msg[i + j * 4 + 2] << 8) | msg[i + j * 4 + 3];
+      for (j = 16; j < 64; j++) {
+        var s0 = ror(w[j - 15], 7) ^ ror(w[j - 15], 18) ^ (w[j - 15] >>> 3);
+        var s1 = ror(w[j - 2], 17) ^ ror(w[j - 2], 19) ^ (w[j - 2] >>> 10);
+        w[j] = (w[j - 16] + s0 + w[j - 7] + s1) | 0;
+      }
+      var a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+      for (j = 0; j < 64; j++) {
+        var S1 = ror(e, 6) ^ ror(e, 11) ^ ror(e, 25);
+        var ch = (e & f) ^ (~e & g);
+        var t1 = (h + S1 + ch + K256[j] + w[j]) | 0;
+        var S0 = ror(a, 2) ^ ror(a, 13) ^ ror(a, 22);
+        var maj = (a & b) ^ (a & c) ^ (b & c);
+        var t2 = (S0 + maj) | 0;
+        h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+      }
+      H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+      H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+    }
+    return H.map(function (x) { return ('00000000' + (x >>> 0).toString(16)).slice(-8); }).join('');
+  }
+  function randomBytes(n) {
+    var out = [], i, arr;
+    if (window.crypto && window.crypto.getRandomValues) {
+      arr = new Uint8Array(n);
+      window.crypto.getRandomValues(arr);
+      for (i = 0; i < n; i++) out.push(arr[i]);
+      return out;
+    }
+    for (i = 0; i < n; i++) out.push(Math.floor(Math.random() * 256));
+    return out;
+  }
+  function toHex(bytes) { return bytes.map(function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); }
+  function makeSalt() { return toHex(randomBytes(16)); }
+  function hashPw(pw, salt) {
+    var h = sha256(salt + '|' + pw + '|shike');
+    for (var i = 0; i < 480; i++) h = sha256(h + salt);
+    return h;
+  }
+
+  /* ---------- 本地存储：shike.v2 = {users, session, library} ---------- */
+  function storageOk() {
+    try {
+      window.localStorage.setItem('shike.probe', '1');
+      window.localStorage.removeItem('shike.probe');
+      return true;
+    } catch (e) { return false; }
+  }
+  function defaultReminders() { return clone(D.reminders); }
+  function emptyDb() {
+    return { users: {}, session: null, library: { recipes: clone(D.recipeQueue), rules: clone(D.rules) } };
+  }
+  function normProfile(p, name) {
+    p = p || {};
+    function num(v, d, lo, hi) {
+      var n = parseFloat(v);
+      if (!isFinite(n)) n = d;
+      return Math.min(hi, Math.max(lo, Math.round(n)));
+    }
+    var nick = String(p.nick || '').trim().slice(0, 16);
+    return {
+      nick: nick || String(name || '新同学').slice(0, 16),
+      gender: p.gender === '男' ? '男' : '女',
+      age: num(p.age, D.profileDefaults.age, 10, 99),
+      height: num(p.height, D.profileDefaults.height, 120, 230),
+      weight: num(p.weight, D.profileDefaults.weight, 25, 200),
+      activity: ACT[p.activity] ? p.activity : '中',
+      goal: GOAL[p.goal] ? p.goal : '维持',
+      since: Date.now()
     };
-    D.seedHistory.forEach(function (h) { s.days[dateKey(h.d)] = dayFromPlan(h); });
-    s.days[dateKey(0)] = dayFromPlan(D.seedToday);
-    return s;
   }
-  function normalize(s) {
-    var fresh = seedState();
-    if (!s.profile) s.profile = fresh.profile;
-    if (!s.reminders) s.reminders = fresh.reminders;
-    if (!s.rules) s.rules = fresh.rules;
-    if (!Array.isArray(s.recipes)) s.recipes = fresh.recipes;
-    if (!s.days) s.days = {};
-    var today = dateKey(0);
-    if (!s.days[today]) s.days[today] = emptyDay();
-    Object.keys(s.days).forEach(function (k) {
-      var d = s.days[k] || {};
-      if (!d.meals) d.meals = {};
-      MEALS.forEach(function (m) { if (!Array.isArray(d.meals[m])) d.meals[m] = []; });
-      if (typeof d.ex !== 'number') d.ex = 0;
-      s.days[k] = d;
+  function normDb(db) {
+    if (!db || typeof db !== 'object') db = emptyDb();
+    if (!db.users || typeof db.users !== 'object') db.users = {};
+    if (!db.library || typeof db.library !== 'object') db.library = {};
+    if (!Array.isArray(db.library.recipes) || !db.library.recipes.length) db.library.recipes = clone(D.recipeQueue);
+    if (!db.library.rules || typeof db.library.rules !== 'object') db.library.rules = clone(D.rules);
+    Object.keys(D.rules).forEach(function (k) {
+      if (typeof db.library.rules[k] !== 'boolean') db.library.rules[k] = D.rules[k];
     });
-    return s;
+    if (typeof db.session !== 'string') db.session = null;
+    if (db.session && !db.users[db.session]) db.session = null;
+    Object.keys(db.users).forEach(function (k) {
+      var u = db.users[k] || {};
+      if (!u.profile) u.profile = normProfile({}, k);
+      if (!u.days || typeof u.days !== 'object') u.days = {};
+      if (!u.reminders || typeof u.reminders !== 'object') u.reminders = defaultReminders();
+      MEALS.forEach(function (m) { if (!u.reminders[m]) u.reminders[m] = D.reminders[m]; });
+      Object.keys(u.days).forEach(function (d) {
+        var day = u.days[d] || {};
+        if (!day.meals) day.meals = {};
+        MEALS.forEach(function (m) { if (!Array.isArray(day.meals[m])) day.meals[m] = []; });
+        if (typeof day.ex !== 'number') day.ex = 0;
+        u.days[d] = day;
+      });
+      db.users[k] = u;
+    });
+    return db;
   }
-  function loadState() {
+  function loadDb() {
     var raw = null;
     try { raw = window.localStorage.getItem(KEY); } catch (e) { raw = null; }
     if (raw) {
-      try {
-        var parsed = JSON.parse(raw);
-        if (parsed && parsed.days) return normalize(parsed);
-      } catch (e2) { /* 数据损坏则回落到种子数据 */ }
+      try { return normDb(JSON.parse(raw)); } catch (e2) { /* 损坏则重建空库 */ }
     }
-    var fresh = seedState();
-    saveState(fresh);
+    var fresh = emptyDb();
+    saveDb(fresh);
     return fresh;
   }
-  function saveState(state) {
-    try { window.localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* 隐私模式下仅内存态 */ }
-    return state;
+  function saveDb(db) {
+    try { window.localStorage.setItem(KEY, JSON.stringify(db)); return true; } catch (e) { return false; }
   }
-  function resetState() {
-    var fresh = seedState();
-    saveState(fresh);
-    return fresh;
+
+  /* ---------- 账号 ---------- */
+  function userKey(name) { return String(name == null ? '' : name).trim(); }
+  function findKey(db, name) {
+    var k = userKey(name);
+    if (!k) return null;
+    if (db.users[k]) return k;
+    var low = k.toLowerCase(), hit = null;
+    Object.keys(db.users).forEach(function (x) { if (x.toLowerCase() === low) hit = x; });
+    return hit;
   }
-  function dayOf(state, offset) { return state.days[dateKey(offset)] || emptyDay(); }
+  function register(db, name, pw, profile) {
+    var key = userKey(name);
+    if (key.length < 2 || key.length > 16) return { error: '用户名需 2~16 个字符' };
+    if (/\s/.test(key)) return { error: '用户名不能包含空格' };
+    if (findKey(db, key)) return { error: '用户名已被占用' };
+    if (String(pw || '').length < 6) return { error: '密码至少 6 位' };
+    var salt = makeSalt();
+    db.users[key] = {
+      salt: salt, hash: hashPw(pw, salt), profile: normProfile(profile, key),
+      days: {}, reminders: defaultReminders(), createdAt: Date.now()
+    };
+    db.session = key;
+    return { ok: true, key: key };
+  }
+  function login(db, name, pw) {
+    var key = findKey(db, name);
+    if (!key) return { error: '用户名不存在' };
+    var u = db.users[key];
+    if (!u || !u.salt || hashPw(pw, u.salt) !== u.hash) return { error: '密码错误' };
+    db.session = key;
+    return { ok: true, key: key };
+  }
 
   return {
-    MEALS: MEALS, KEY: KEY, r0: r0, r1: r1, fmt: fmt,
+    MEALS: MEALS, KEY: KEY, r0: r0, r1: r1, fmt: fmt, clone: clone,
     dateKey: dateKey, weekday: weekday, convDate: convDate, dayLabel: dayLabel,
     matchFood: matchFood, makeItem: makeItem, itemFromGrams: itemFromGrams, estimateItem: estimateItem,
     parseSentence: parseSentence, parseItem: parseItem, riskOf: riskOf, groupRisks: groupRisks,
-    itemsTotals: itemsTotals, dayTotals: dayTotals, riskSummary: riskSummary, emptyDay: emptyDay,
-    pairPlan: pairPlan, weekly: weekly, recipeStats: recipeStats, badgeText: badgeText,
-    seedState: seedState, loadState: loadState, saveState: saveState, resetState: resetState, dayOf: dayOf
+    itemsTotals: itemsTotals, dayTotals: dayTotals, riskSummary: riskSummary, emptyDay: emptyDay, dayOf: dayOf,
+    pairPlan: pairPlan, weekly: weekly, bmr: bmr, targetsOf: targetsOf, mealTargetOf: mealTargetOf,
+    recipeStats: recipeStats, badgeText: badgeText,
+    sha256: sha256, makeSalt: makeSalt, hashPw: hashPw,
+    storageOk: storageOk, loadDb: loadDb, saveDb: saveDb, emptyDb: emptyDb,
+    register: register, login: login, normProfile: normProfile
   };
 })();
 
@@ -948,12 +1158,17 @@ window.SHIKE.engine = (function () {
     { id: 'week', label: '周报', icon: '📊' },
     { id: 'remind', label: '提醒', icon: '⏰' }
   ];
+  var NAMES = { today: '今天', log: '记录', pair: '配餐', week: '周报', remind: '提醒', console: '营养师后台' };
   var MEAL_EMO = { '早餐': '🥛', '午餐': '🍚', '晚餐': '🍲', '加餐': '🍪' };
-  var state = null;
+  var db = null;
   var RT = {
     tab: 'today', day: 0, dayPick: false, dash: 'meal',
     logText: '', draft: null, pairText: '', pair: null,
-    resetAsk: false, rejectId: '', timer: 0
+    authTab: 'login', authErr: '', rejectId: '', timer: 0, storageWarned: false
+  };
+  var FORM = {
+    lu: '', lp: '', ru: '', rn: '', rp: '', rp2: '',
+    gender: '女', age: '20', height: '165', weight: '55', activity: '中', goal: '维持'
   };
 
   function $(sel) { return document.querySelector(sel); }
@@ -968,8 +1183,109 @@ window.SHIKE.engine = (function () {
     window.clearTimeout(RT.timer);
     RT.timer = window.setTimeout(function () { el.classList.remove('show'); }, 2400);
   }
-  function save() { E.saveState(state); }
+  function user() { return (db && db.session && db.users[db.session]) ? db.users[db.session] : null; }
+  function tg() { var u = user(); return E.targetsOf(u ? u.profile : D.profileDefaults); }
+  function persist() {
+    if (!E.saveDb(db) && !RT.storageWarned) {
+      RT.storageWarned = true;
+      toast('本地存储不可用，数据只在本次页面内有效');
+    }
+  }
   function go(tab) { RT.tab = tab; RT.dayPick = false; paint(); }
+
+  /* ---------- 登录 / 注册 ---------- */
+  function errLine() { return RT.authErr ? '<p class="auth-err" role="alert">' + esc(RT.authErr) + '</p>' : ''; }
+  function storageLine() {
+    if (E.storageOk()) return '';
+    return '<p class="auth-warn">当前浏览器禁用了本地存储（如隐私模式）：可以试用，但账号与数据只在本次打开期间有效。</p>';
+  }
+  function pills(field, opts, cur) {
+    return '<div class="pills">' + opts.map(function (o) {
+      return '<button type="button" class="pill' + (cur === o ? ' on' : '') + '" data-act="pick" data-f="' + field + '"' +
+        ' data-v="' + o + '" aria-pressed="' + (cur === o ? 'true' : 'false') + '">' + o + '</button>';
+    }).join('') + '</div>';
+  }
+  function field(id, label, opts) {
+    opts = opts || {};
+    return '<div class="field"><label for="' + id + '">' + label + '</label>' +
+      '<input id="' + id + '" class="in" type="' + (opts.type || 'text') + '"' +
+      (opts.mode ? ' inputmode="' + opts.mode + '"' : '') +
+      ' value="' + esc(FORM[opts.k || id]) + '" placeholder="' + esc(opts.ph || '') + '"' +
+      (opts.ac ? ' autocomplete="' + opts.ac + '"' : '') + '></div>';
+  }
+  function viewAuth() {
+    var t = RT.authTab;
+    var html = '<section class="auth"><div class="auth-brand"><div class="auth-logo" aria-hidden="true">🍱</div>' +
+      '<h1 class="auth-title">食刻</h1><p class="auth-sub">学生的 AI 饮食打卡 · 从零开始记录每一餐</p></div>' +
+      '<div class="card auth-card"><div class="auth-seg" role="tablist" aria-label="登录或注册">' +
+      '<button class="aseg' + (t === 'login' ? ' on' : '') + '" role="tab" aria-selected="' + (t === 'login' ? 'true' : 'false') + '" data-act="authtab" data-v="login">登录</button>' +
+      '<button class="aseg' + (t === 'register' ? ' on' : '') + '" role="tab" aria-selected="' + (t === 'register' ? 'true' : 'false') + '" data-act="authtab" data-v="register">注册</button></div>';
+    if (t === 'login') {
+      html += field('lu', '用户名', { k: 'lu', ph: '2~16 个字符', ac: 'username' }) +
+        field('lp', '密码', { k: 'lp', type: 'password', ph: '至少 6 位', ac: 'current-password' }) +
+        errLine() +
+        '<button class="btn primary" data-act="login">登录</button>' +
+        '<p class="auth-switch">没有账号？<button class="link" data-act="authtab" data-v="register">注册</button></p>';
+    } else {
+      html += field('ru', '用户名', { k: 'ru', ph: '2~16 个字符，唯一', ac: 'username' }) +
+        field('rn', '昵称', { k: 'rn', ph: '怎么称呼你' }) +
+        '<div class="field-2">' + field('rp', '密码', { k: 'rp', type: 'password', ph: '至少 6 位', ac: 'new-password' }) +
+        field('rp2', '确认密码', { k: 'rp2', type: 'password', ph: '再输一次', ac: 'new-password' }) + '</div>' +
+        '<div class="field-2">' + field('aged', '年龄', { k: 'age', type: 'number', mode: 'numeric', ph: '20' }) +
+        field('hgt', '身高 (cm)', { k: 'height', type: 'number', mode: 'numeric', ph: '165' }) + '</div>' +
+        '<div class="field-2">' + field('wgt', '体重 (kg)', { k: 'weight', type: 'number', mode: 'numeric', ph: '55' }) +
+        '<div class="field"><span class="lab" id="lb-gender">性别</span>' + pills('gender', ['男', '女'], FORM.gender) + '</div></div>' +
+        '<div class="field"><span class="lab">活动量</span>' + pills('activity', D.activityOptions, FORM.activity) + '</div>' +
+        '<div class="field"><span class="lab">目标</span>' + pills('goal', D.goalOptions, FORM.goal) + '</div>' +
+        errLine() +
+        '<button class="btn primary" data-act="register">注册并开始</button>' +
+        '<p class="auth-switch">已有账号？<button class="link" data-act="authtab" data-v="login">登录</button></p>';
+    }
+    html += '</div>' + storageLine() +
+      '<p class="auth-note">本地演示账号：账号与数据仅保存在本浏览器，非服务端鉴权，换设备需重新注册</p></section>';
+    return html;
+  }
+  function doLogin() {
+    var name = readAuth('lu', 'lu'), pw = readAuth('lp', 'lp');
+    var r = E.login(db, name, pw);
+    if (r.error) { RT.authErr = r.error; paint(); return; }
+    persist();
+    RT.authErr = ''; FORM.lp = '';
+    RT.tab = 'today'; RT.day = 0;
+    paint();
+    toast('欢迎回来，' + (user().profile.nick || db.session));
+  }
+  function doRegister() {
+    var a = parseInt(readAuth('aged', 'age'), 10);
+    var h = parseInt(readAuth('hgt', 'height'), 10);
+    var w = parseInt(readAuth('wgt', 'weight'), 10);
+    if (!String(readAuth('ru', 'ru') || '').trim()) { RT.authErr = '请填写用户名'; paint(); return; }
+    var pw = readAuth('rp', 'rp'), pw2 = readAuth('rp2', 'rp2');
+    if (!(a >= 10 && a <= 99)) { RT.authErr = '年龄请填 10~99'; paint(); return; }
+    if (!(h >= 120 && h <= 230)) { RT.authErr = '身高请填 120~230 cm'; paint(); return; }
+    if (!(w >= 25 && w <= 200)) { RT.authErr = '体重请填 25~200 kg'; paint(); return; }
+    if (String(pw).length < 6) { RT.authErr = '密码至少 6 位'; paint(); return; }
+    if (pw !== pw2) { RT.authErr = '两次输入的密码不一致'; paint(); return; }
+    var r = E.register(db, FORM.ru, pw, {
+      nick: FORM.rn, gender: FORM.gender, age: a, height: h,
+      weight: w, activity: FORM.activity, goal: FORM.goal
+    });
+    if (r.error) { RT.authErr = r.error; paint(); return; }
+    persist();
+    RT.authErr = ''; FORM.rp = ''; FORM.rp2 = '';
+    RT.tab = 'today'; RT.day = 0; RT.draft = null; RT.pair = null;
+    paint();
+    toast('注册成功，从 0 开始记录第一餐吧');
+  }
+  function doLogout() {
+    db.session = null;
+    persist();
+    RT.tab = 'today'; RT.day = 0; RT.dayPick = false; RT.dash = 'meal';
+    RT.draft = null; RT.pair = null; RT.logText = ''; RT.pairText = '';
+    RT.authTab = 'login'; RT.authErr = ''; FORM.lp = ''; RT.rejectId = '';
+    paint();
+    toast('已退出登录');
+  }
 
   /* ---------- 顶栏与标签栏 ---------- */
   function topbar() {
@@ -978,7 +1294,7 @@ window.SHIKE.engine = (function () {
         '<div class="bar-cell mid"><span class="title-pill">营养师后台</span></div>' +
         '<div class="bar-cell right"><span class="mascot">🧑‍🍳</span></div>';
     }
-    var title = RT.tab === 'today' ? E.dayLabel(RT.day) : ({ log: '记录', pair: '配餐', week: '周报', remind: '提醒' })[RT.tab];
+    var title = RT.tab === 'today' ? E.dayLabel(RT.day) : NAMES[RT.tab];
     var pill = RT.tab === 'today'
       ? '<button class="title-pill" data-act="daypick" aria-expanded="' + (RT.dayPick ? 'true' : 'false') + '" aria-label="切换查看日期，当前 ' + title + '">' + title + ' <span class="caret">▾</span></button>'
       : '<span class="title-pill">' + title + '</span>';
@@ -987,6 +1303,7 @@ window.SHIKE.engine = (function () {
       '<div class="bar-cell right"><span class="mascot" aria-hidden="true">' + (RT.tab === 'today' ? '🐱' : '🍙') + '</span></div>';
   }
   function tabbar() {
+    if (!user()) return '';
     return TABS.map(function (t) {
       var on = RT.tab === t.id;
       return '<button class="tab' + (on ? ' on' : '') + '" data-act="tab" data-tab="' + t.id + '"' +
@@ -1001,36 +1318,34 @@ window.SHIKE.engine = (function () {
       return '<span class="flag lv' + x.level + '">' + x.kind + '</span>';
     }).join('') + '</span>' : '';
   }
-  function foodRow(it, meal, i) {
-    return '<button class="food-row" data-act="food" data-meal="' + esc(meal) + '" data-i="' + i + '"' +
+  function foodRow(it, meal, i, act) {
+    return '<button class="food-row" data-act="' + (act || 'food') + '" data-meal="' + esc(meal) + '" data-i="' + i + '"' +
       ' aria-label="' + esc(it.name + ' ' + it.kcal + '千卡 ' + it.qty + it.unit + '，查看营养详情') + '">' +
       '<span class="tile" aria-hidden="true">' + it.emoji + '</span>' +
-      '<span class="f-main"><span class="f-name">' + esc(it.name) + '</span>' +
-      '<span class="f-sub"><b>' + it.kcal + '千卡</b> ' + esc(it.qty + it.unit) + '</span>' + flagsOf(it) + '</span>' +
-      '<span class="chev" aria-hidden="true">›</span></button>';
-  }
-  function draftRow(it, meal, i) {
-    return '<button class="food-row" data-act="dfood" data-meal="' + esc(meal) + '" data-i="' + i + '"' +
-      ' aria-label="' + esc(it.name + ' 估算 ' + it.kcal + '千卡，查看详情') + '">' +
-      '<span class="tile" aria-hidden="true">' + it.emoji + '</span>' +
-      '<span class="f-main"><span class="f-name">' + esc(it.name) + (it.estimated ? ' <span class="flag lv1">未收录估算</span>' : '') + '</span>' +
+      '<span class="f-main"><span class="f-name">' + esc(it.name) +
+      (it.estimated ? ' <span class="flag lv1">未收录估算</span>' : '') + '</span>' +
       '<span class="f-sub"><b>' + it.kcal + '千卡</b> ' + esc(it.qty + it.unit) + '</span>' + flagsOf(it) + '</span>' +
       '<span class="chev" aria-hidden="true">›</span></button>';
   }
   function aiNote() { return '<p class="ai-note">内容由AI生成（本地营养知识库规则引擎）</p>'; }
+  function profileLine() {
+    var p = user().profile, T = tg();
+    return p.gender + ' · ' + p.age + ' 岁 · ' + p.height + 'cm · ' + p.weight + 'kg · 活动量' + p.activity + ' · ' + p.goal;
+  }
 
   /* ---------- 今天 ---------- */
   function viewToday() {
-    var day = E.dayOf(state, RT.day);
+    var u = user(), T = tg();
+    var day = E.dayOf(u, RT.day);
     var t = E.dayTotals(day);
     var rs = E.riskSummary(t);
-    var tg = D.targets;
+    var left = Math.max(0, T.kcal + t.ex - t.kcal);
+    var ratio = Math.min(1, t.kcal / Math.max(1, T.kcal + t.ex));
     var C = 2 * Math.PI * 50;
-    var off = C * (1 - t.ratio);
     var macro = [
-      { name: '碳水', val: t.carb, goal: tg.carb, color: 'var(--carb)' },
-      { name: '蛋白质', val: t.protein, goal: tg.protein, color: 'var(--prot)' },
-      { name: '脂肪', val: t.fat, goal: tg.fat, color: 'var(--fat)' }
+      { name: '碳水', val: t.carb, goal: T.carb, color: 'var(--carb)' },
+      { name: '蛋白质', val: t.protein, goal: T.protein, color: 'var(--prot)' },
+      { name: '脂肪', val: t.fat, goal: T.fat, color: 'var(--fat)' }
     ].map(function (m) {
       var pct = m.goal ? Math.min(100, m.val / m.goal * 100) : 0;
       return '<div class="macro"><div class="ml">' + m.name + '</div>' +
@@ -1041,20 +1356,20 @@ window.SHIKE.engine = (function () {
     var html = '<section class="card"><div class="hero">' +
       '<div class="hero-side"><span class="hero-emo" aria-hidden="true">🍅</span><span class="lab">饮食摄入</span>' +
       '<span class="num">' + E.r0(t.kcal) + '</span><span class="unit">千卡</span></div>' +
-      '<div class="ring-wrap"><svg class="ring" viewBox="0 0 120 120" role="img" aria-label="还可摄入 ' + E.r0(t.left) + ' 千卡，推荐摄入 ' + tg.kcal + ' 千卡">' +
+      '<div class="ring-wrap"><svg class="ring" viewBox="0 0 120 120" role="img" aria-label="还可摄入 ' + E.r0(left) + ' 千卡，推荐摄入 ' + T.kcal + ' 千卡">' +
       '<circle class="trk" cx="60" cy="60" r="50"></circle>' +
-      '<circle class="fil" cx="60" cy="60" r="50" stroke="#ffa9c8" stroke-dasharray="' + C.toFixed(2) + '" stroke-dashoffset="' + off.toFixed(2) + '"></circle></svg>' +
-      '<div class="ring-center"><span class="rl">还可摄入</span><span class="rn">' + E.r0(t.left) + '</span>' +
-      '<span class="rs">推荐摄入' + tg.kcal + '千卡</span></div></div>' +
+      '<circle class="fil" cx="60" cy="60" r="50" stroke="#ffa9c8" stroke-dasharray="' + C.toFixed(2) + '" stroke-dashoffset="' + (C * (1 - ratio)).toFixed(2) + '"></circle></svg>' +
+      '<div class="ring-center"><span class="rl">还可摄入</span><span class="rn">' + E.r0(left) + '</span>' +
+      '<span class="rs">推荐摄入' + T.kcal + '千卡</span></div></div>' +
       '<div class="hero-side"><span class="hero-emo" aria-hidden="true">🏋️</span><span class="lab">运动消耗</span>' +
       '<span class="num">' + E.r0(t.ex) + '</span><span class="unit">千卡</span></div></div>' +
-      '<div class="dash"></div><div class="macros">' + macro + '</div></section>';
+      '<div class="dash"></div><div class="macros">' + macro + '</div>' +
+      '<p class="tiny" style="margin-top:10px">推荐摄入按你的资料估算：' + esc(profileLine()) + '</p></section>';
 
     html += '<section class="card"><div class="card-head"><span class="mascot" aria-hidden="true">🐱</span>' +
       '<div><h2 class="card-title">饮食打卡<span class="uline"></span></h2></div>' +
       '<div class="seg"><button class="' + (RT.dash === 'meal' ? 'on' : '') + '" data-act="dash" data-v="meal">饮食打卡</button>' +
       '<button class="' + (RT.dash === 'ex' ? 'on' : '') + '" data-act="dash" data-v="ex">运动打卡</button></div></div>';
-
     if (RT.dash === 'ex') {
       html += '<p class="muted" style="margin:8px 0 10px">今天运动消耗 ' + E.r0(t.ex) + ' 千卡，记一笔会让「还可摄入」一起变化。</p>' +
         '<div class="chips">' +
@@ -1065,13 +1380,12 @@ window.SHIKE.engine = (function () {
     } else {
       E.MEALS.forEach(function (m) {
         var items = (day.meals && day.meals[m]) || [];
-        if (!items.length && m === '加餐') return;
-        var mt = t.meals[m];
         html += '<div class="meal"><div class="meal-head"><span class="me" aria-hidden="true">' + MEAL_EMO[m] + '</span>' +
-          '<h3>' + m + '</h3><span class="mk">' + E.r0(mt.kcal) + '/' + D.mealTargets[m] + '千卡</span></div>' +
+          '<h3>' + m + '</h3><span class="mk">' + E.r0(t.meals[m].kcal) + '/' + E.mealTargetOf(T, m) + '千卡</span></div>' +
           '<div class="food-list">' + (items.length
-            ? items.map(function (it, i) { return foodRow(it, m, i); }).join('')
-            : '<div class="empty">还没记录，点下面的按钮记一笔</div>') + '</div></div>';
+            ? items.map(function (it, i) { return foodRow(it, m, i, 'food'); }).join('')
+            : '<div class="meal-empty"><span>还没有记录</span><button class="mini ghost" data-act="tab" data-tab="log">去记录</button></div>') +
+          '</div></div>';
       });
       html += '<div class="dash"></div><button class="btn primary" data-act="tab" data-tab="log">📝 一句话记饮食</button>';
     }
@@ -1084,18 +1398,19 @@ window.SHIKE.engine = (function () {
       '<span class="flag lv3">高油 ' + counts['高油'] + '</span>' +
       '<span class="flag lv1">超加工 ' + counts['超加工'] + '</span></div></div>' +
       '<p class="muted" style="margin:8px 0 2px">依据公开膳食建议：' + esc(D.guidance.sugar) + '；' + esc(D.guidance.oil) + '。</p>';
-    if (rs.list.length) {
+    if (!t.count) {
+      html += '<div class="empty">今天还没有记录，记一餐后这里会出现提示</div>';
+    } else if (!rs.list.length) {
+      html += '<div class="empty">今天没有高糖/高油/超加工标记，保持住 ✨</div>';
+    } else {
       html += rs.list.map(function (f) {
         return '<div class="risk-row"><span class="flag lv' + f.level + '">' + f.kind + '</span>' +
           '<div class="rr-main"><div class="rr-n">' + esc(f.meal) + ' · ' + esc(f.item) + '</div>' +
           '<div class="rr-t">' + esc(f.text) + '</div></div></div>';
       }).join('');
-    } else {
-      html += '<div class="empty">今天没有高糖/高油/超加工标记，保持住 ✨</div>';
     }
     html += '<div class="dash"></div><p class="tiny">今日添加糖约 ' + E.fmt(rs.sugar) + ' 克（建议 &lt;25 克/天）· 超加工食品建议每周不超过 1~2 次</p>' +
       aiNote() + '</section>';
-
     return (RT.dayPick ? daypick() : '') + html;
   }
   function daypick() {
@@ -1108,16 +1423,17 @@ window.SHIKE.engine = (function () {
   /* ---------- 记录 ---------- */
   function viewLog() {
     var tpls = [
-      '早餐：一杯咖啡+一个红枣吐司；午餐：西红柿炒鸡蛋90g+辣椒炒肉90g+米饭100g；晚餐：一个苹果',
+      '早餐：一杯豆浆+一个水煮蛋+一个玉米',
       '午餐：黄焖鸡一份+米饭一碗',
       '晚餐：清炒时蔬+水煮蛋两个',
       '加餐：一杯无糖酸奶+一根香蕉'
     ];
+    var u = user(), T = tg();
     var html = '<section class="card"><div class="card-head"><span class="mascot" aria-hidden="true">🍙</span>' +
       '<h2 class="card-title">一句话记饮食<span class="uline"></span></h2></div>' +
       '<p class="muted" style="margin:6px 0 10px">像发消息一样说清楚吃了什么、吃了多少，我来拆成餐次和食物。</p>' +
       '<label class="sr-only" for="logText">这一餐吃了什么</label>' +
-      '<textarea id="logText" class="ta" placeholder="例：早餐：一杯咖啡+一个红枣吐司；午餐：西红柿炒鸡蛋90g+米饭100g">' + esc(RT.logText) + '</textarea>' +
+      '<textarea id="logText" class="ta" placeholder="例：午餐：米饭100g+鸡胸肉100g">' + esc(RT.logText) + '</textarea>' +
       '<div class="chips">' + tpls.map(function (t) {
         return '<button class="chip" data-act="tpl" data-txt="' + esc(t) + '">' + esc(t.length > 22 ? t.slice(0, 22) + '…' : t) + '</button>';
       }).join('') + '</div>' +
@@ -1131,25 +1447,27 @@ window.SHIKE.engine = (function () {
           '<span class="dtag">' + E.dayLabel(RT.day) + ' ' + g.meal + ' ▾</span>' +
           '<button class="dtag" data-act="refill" aria-label="修改这句话">修改 ✏️</button>' +
           '<span class="mascot" style="margin-left:auto" aria-hidden="true">🐱</span></div>' +
-          '<div class="food-list">' + g.items.map(function (it, i) { return draftRow(it, g.meal, i); }).join('') + '</div>' +
+          '<div class="food-list">' + g.items.map(function (it, i) { return foodRow(it, g.meal, i, 'dfood'); }).join('') + '</div>' +
           '<div class="dash"></div><div class="draft-foot">' +
           '<span class="sum">🔥 ' + sum.kcal + ' 千卡 <small>蛋白 ' + E.fmt(sum.protein) + ' 克</small></span>' +
           '<button class="btn sm ' + (done ? 'ghost' : 'primary') + '" data-act="save" data-meal="' + esc(g.meal) + '"' +
           (done ? ' disabled' : '') + '>记录成功' + (done ? ' ✓' : '') + '</button></div>' +
           aiNote() + '</section>';
       }).join('');
-      html += '<p class="tiny">保存同一餐次会覆盖今天该餐次的旧记录；点「记录成功」即写入本机存储。</p>';
+      html += '<p class="tiny">保存同一餐次会覆盖今天该餐次的旧记录；点「记录成功」即写入本机。</p>';
     }
 
-    var day = E.dayOf(state, RT.day);
+    var day = E.dayOf(u, RT.day);
     var t = E.dayTotals(day);
     var rows = E.MEALS.map(function (m) {
-      var items = (day.meals && day.meals[m]) || [];
-      return m + ' ' + items.length + ' 项 · ' + E.r0(t.meals[m].kcal) + ' 千卡';
+      var n = ((day.meals && day.meals[m]) || []).length;
+      return m + ' ' + n + ' 项 · ' + E.r0(t.meals[m].kcal) + ' 千卡';
     }).join('　｜　');
     html += '<section class="card soft"><h2 class="section-title">今天已记录</h2>' +
       '<p class="muted">' + rows + '</p><div class="dash"></div>' +
-      '<p class="muted">合计 <b>' + E.r0(t.kcal) + ' 千卡</b> · 碳水 ' + E.fmt(t.carb) + '克 · 蛋白 ' + E.fmt(t.protein) + '克 · 脂肪 ' + E.fmt(t.fat) + '克</p>' +
+      (t.count
+        ? '<p class="muted">合计 <b>' + E.r0(t.kcal) + ' 千卡</b> · 碳水 ' + E.fmt(t.carb) + '克 · 蛋白 ' + E.fmt(t.protein) + '克 · 脂肪 ' + E.fmt(t.fat) + '克</p>'
+        : '<p class="muted">还没有任何记录 · 目标 ' + T.kcal + ' 千卡</p>') +
       '<div style="margin-top:12px"><button class="btn line" data-act="tab" data-tab="today">回到今天看总览</button></div></section>';
     return html;
   }
@@ -1157,7 +1475,8 @@ window.SHIKE.engine = (function () {
   /* ---------- 配餐 ---------- */
   function viewPair() {
     var dishes = ['炸鸡', '麻辣烫', '黄焖鸡', '番茄牛腩'];
-    var b = E.recipeStats(state);
+    var T = tg();
+    var b = E.recipeStats(db.library);
     var html = '<section class="card"><div class="card-head"><span class="mascot" aria-hidden="true">🍱</span>' +
       '<h2 class="card-title">AI个性化配餐<span class="uline"></span></h2></div>' +
       '<p class="muted" style="margin:6px 0 10px">告诉我你想吃什么，我按「主食＋蛋白质＋蔬菜＋水果」帮你补齐这一餐。</p>' +
@@ -1171,12 +1490,12 @@ window.SHIKE.engine = (function () {
     if (!RT.pair) {
       return html + '<section class="card soft"><h2 class="section-title">今天的审核状态</h2>' +
         '<span class="badge ' + (b.pending ? 'warn' : 'ok') + '">' + (b.pending ? '⏳ 营养师待审 ' + b.pending + ' 道' : '✅ 营养师已审核') + '</span>' +
-        '<p class="muted" style="margin-top:8px">规则库里的菜谱卡需要营养师审核后才会进入推荐，' + E.badgeText(state) + '。</p>' +
-        aiNote() + '</section>';
+        '<p class="muted" style="margin-top:8px">规则库里的菜谱卡需要营养师审核后才会进入推荐，' + E.badgeText(db.library) + '。' +
+        '今天的目标 ' + T.kcal + ' 千卡，一餐目标 ' + T.meal + ' 千卡。</p>' + aiNote() + '</section>';
     }
 
     var p = RT.pair;
-    var pct = Math.min(100, p.total / p.target * 100);
+    var pct = Math.min(100, p.total / Math.max(1, p.target) * 100);
     var rows = p.canteen.map(function (c) {
       return '<div class="dish-row"><span class="tile" aria-hidden="true">' + c.emoji + '</span>' +
         '<div class="dish-main"><div class="dish-n">' + esc(c.name) +
@@ -1191,8 +1510,8 @@ window.SHIKE.engine = (function () {
     }).join('');
 
     html += '<section class="card"><div class="badge-line">' +
-      '<span class="badge ' + (b.pending ? 'ok' : 'ok') + '">✅ 营养师已审核</span>' +
-      '<span class="badge pink">' + esc(E.badgeText(state)) + '</span>' +
+      '<span class="badge ok">✅ 营养师已审核</span>' +
+      '<span class="badge pink">' + esc(E.badgeText(db.library)) + '</span>' +
       '<button class="mini ghost" data-act="console">进入后台复核</button></div>' +
       '<div class="meal-head" style="padding:0 0 8px"><span class="me" aria-hidden="true">🍽</span><h3>你想吃：' + esc(p.main.name) + '</h3>' +
       '<span class="mk">' + p.main.kcal + '千卡</span></div>' + flagsOf(p.main) +
@@ -1200,6 +1519,7 @@ window.SHIKE.engine = (function () {
       '<div class="dash"></div><div class="total-box"><div><div class="tiny">一餐合计</div><span class="big">' + p.total + '</span> <span class="muted">千卡</span></div>' +
       '<div class="goal">目标 ' + p.target + ' 千卡 · ' + (p.diff > 0 ? '超出 ' + p.diff : '还可 ' + (-p.diff)) + ' 千卡</div></div>' +
       '<div class="tbar ' + (p.diff > 0 ? 'over' : '') + '"><i style="width:' + pct.toFixed(1) + '%"></i></div>' +
+      '<p class="tiny" style="margin-top:6px">一餐目标 = 日目标 ' + T.kcal + ' 千卡 × 0.4</p>' +
       '<div class="dash"></div><h3 class="section-title">食堂菜品推荐</h3>' + rows + '</section>';
 
     if (p.risks.length) {
@@ -1215,14 +1535,13 @@ window.SHIKE.engine = (function () {
 
   /* ---------- 周报 ---------- */
   function viewWeek() {
-    var w = E.weekly(state);
+    var u = user(), T = tg(), w = E.weekly(u, T);
     var maxK = w.days.reduce(function (a, d) { return Math.max(a, d.kcal); }, w.target) * 1.08;
-    /* 数值标签单独一行放在绘图区之上，与虚线（绘图区内）永不重叠 */
     var vals = '<div class="vals">' + w.days.map(function (d) {
-      return '<span class="bval">' + d.kcal + '</span>';
+      return '<span class="bval">' + (d.kcal > 0 ? d.kcal : '—') + '</span>';
     }).join('') + '</div>';
     var bars = w.days.map(function (d) {
-      var h = Math.max(2, d.kcal / maxK * 100);
+      var h = d.kcal > 0 ? Math.max(2, d.kcal / maxK * 100) : 0;
       var cls = d.isToday ? 'today' : (d.kcal > w.target ? 'over' : '');
       return '<div class="bcol"><div class="bfill ' + cls + '" style="height:' + h.toFixed(1) + '%"></div></div>';
     }).join('');
@@ -1231,37 +1550,42 @@ window.SHIKE.engine = (function () {
       return '<span class="' + (d.isToday ? 'on' : '') + '">' + d.label + '</span>';
     }).join('');
     var metrics = [
-      { t: '平均摄入', n: w.avg, u: '千卡' },
+      { t: '平均摄入', n: w.hasData ? w.avg : '—', u: w.hasData ? '千卡' : '' },
       { t: '蛋白质达标天数', n: w.proteinOk + '/7', u: '天' },
       { t: '高糖/高油标记', n: w.flags, u: '次' },
-      { t: '对比上周', n: (w.vsWeek > 0 ? '+' : '') + w.vsWeek, u: '%' }
+      { t: '对比上周', n: w.vsWeek === null ? '—' : ((w.vsWeek > 0 ? '+' : '') + w.vsWeek), u: w.vsWeek === null ? '' : '%' }
     ].map(function (m) {
       return '<div class="metric"><div class="mt">' + m.t + '</div><div class="mn">' + m.n + '<small>' + m.u + '</small></div></div>';
     }).join('');
-    var struct = w.structure.map(function (s) {
+    var struct = w.hasData ? w.structure.map(function (s) {
       return '<div class="struct"><div class="struct-top"><span>' + s.name + '</span><b>' + s.pct + '% <span class="tiny">建议 ' + s.band + '</span></b></div>' +
         '<div class="sbar"><i style="width:' + Math.min(100, s.pct) + '%;background:' + s.color + '"></i></div></div>';
-    }).join('');
+    }).join('') : '<p class="muted">记录几餐之后，这里会显示碳水 / 蛋白质 / 脂肪的供能比例。</p>';
     var tips = w.suggestions.map(function (s, i) {
       return '<li><span class="no">' + (i + 1) + '</span><span>' + esc(s) + '</span></li>';
     }).join('');
     return '<section class="card"><div class="card-head"><span class="mascot" aria-hidden="true">📊</span>' +
       '<div><h2 class="card-title">本周饮食小结<span class="uline"></span></h2></div></div>' +
       '<div class="chart">' + vals + '<div class="bars">' + bars + tline + '</div><div class="xlab">' + xlab + '</div></div>' +
-      '<p class="tiny" style="margin-top:8px">柱状为每天实际摄入；<b>绿色虚线</b>为推荐目标 ' + w.target + ' 千卡</p></section>' +
+      '<p class="tiny" style="margin-top:8px">柱状为每天实际摄入；<b>绿色虚线</b>为推荐目标 ' + w.target + ' 千卡</p>' +
+      (w.hasData ? '' : '<div class="empty-week"><span>本周还没有打卡，先记录今天的一餐吧</span>' +
+        '<button class="mini ghost" data-act="tab" data-tab="log">去记录</button></div>') + '</section>' +
       '<section class="card"><h3 class="section-title">关键指标</h3><div class="metrics">' + metrics + '</div>' +
-      '<p class="tiny" style="margin-top:10px">上周平均 ' + w.prev + ' 千卡；本周添加糖合计约 ' + E.fmt(w.sugar) + ' 克。</p></section>' +
+      '<p class="tiny" style="margin-top:10px">本周已记录 ' + w.recorded + ' 天' + (w.hasData ? '（日均按已记录天数算）' : '') +
+      (w.prev ? '；上周平均 ' + w.prev + ' 千卡' : '；还没有上周数据') +
+      '；本周添加糖合计约 ' + E.fmt(w.sugar) + ' 克。</p></section>' +
       '<section class="card"><h3 class="section-title">饮食结构</h3>' + struct +
       '<p class="muted" style="margin-top:10px">按三大营养素供能比计算，建议碳水 50~65%、蛋白 10~20%、脂肪 20~30%。</p></section>' +
-      '<section class="card"><h3 class="section-title">3 个可执行建议</h3><ul class="tips">' + tips + '</ul></section>' +
+      '<section class="card"><h3 class="section-title">' + (w.hasData ? '3 个可执行建议' : '下一步') + '</h3><ul class="tips">' + tips + '</ul></section>' +
       '<section class="card soft"><div class="comment"><span class="ce" aria-hidden="true">🐱</span><div>' +
       '<h3 class="section-title">营养师点评</h3><p>' + esc(w.comment) + '</p></div></div>' + aiNote() + '</section>';
   }
 
   /* ---------- 提醒 ---------- */
   function viewRemind() {
+    var u = user(), T = tg(), p = u.profile;
     var rows = E.MEALS.map(function (m) {
-      var r = state.reminders[m] || { on: false, time: '12:00' };
+      var r = u.reminders[m] || { on: false, time: '12:00' };
       var id = 'tm-' + m;
       return '<div class="remind-row"><span class="re" aria-hidden="true">' + MEAL_EMO[m] + '</span>' +
         '<div class="remind-main"><div class="rn">' + m + '提醒</div><div class="rt">' + (r.on ? '已开启，到点提醒' : '已关闭') + '</div></div>' +
@@ -1272,27 +1596,33 @@ window.SHIKE.engine = (function () {
     }).join('');
     var supported = ('Notification' in window);
     var granted = supported && window.Notification.permission === 'granted';
-    var on = !!state.notify && granted;
-    return '<section class="card"><div class="card-head"><span class="mascot" aria-hidden="true">⏰</span>' +
+    var on = !!u.notify && granted;
+    return '<section class="card"><div class="card-head"><span class="mascot" aria-hidden="true">🙋</span>' +
+      '<div><h2 class="card-title">我的资料<span class="uline"></span></h2></div></div>' +
+      '<p class="muted" style="margin:6px 0 8px">' + esc(p.nick) + '（' + esc(db.session) + '）· ' + esc(profileLine()) + '</p>' +
+      '<div class="dash"></div>' +
+      '<p class="tiny">基础代谢 ' + T.bmr + ' 千卡 × 活动量 ' + T.activity + ' × 目标系数 ' + T.goalFactor + ' = 日目标 <b>' + T.kcal + '</b> 千卡；' +
+      '蛋白 ' + E.fmt(T.protein) + ' 克 · 脂肪 ' + E.fmt(T.fat) + ' 克 · 碳水 ' + E.fmt(T.carb) + ' 克。</p>' +
+      '<p class="tiny" style="margin-top:6px">资料在注册时填写，本演示不提供在线修改。</p></section>' +
+      '<section class="card"><div class="card-head"><span class="mascot" aria-hidden="true">⏰</span>' +
       '<div><h2 class="card-title">就餐定时提醒<span class="uline"></span></h2></div></div>' +
       '<p class="muted" style="margin:6px 0 4px">早餐 / 午餐 / 晚餐 / 加餐，各自开关和时间都能改。</p>' + rows +
       '<div class="dash"></div><button class="btn primary" data-act="testtoast">🔔 发送测试提醒</button></section>' +
-      '<section class="card"><h3 class="section-title">通知与数据</h3>' +
+      '<section class="card"><h3 class="section-title">通知与账号</h3>' +
       '<div class="setting-row"><div class="sm"><b>浏览器通知</b><p>' +
       (supported ? '当前权限：' + window.Notification.permission + '（只有点这个开关才会申请权限）' : '当前浏览器不支持系统通知，测试提醒会用页面提示') +
       '</p></div><button class="switch" role="switch" data-act="notify" aria-checked="' + (on ? 'true' : 'false') + '" aria-label="浏览器通知开关"></button></div>' +
-      '<div class="setting-row"><div class="sm"><b>重置演示数据</b><p>恢复 7 天打卡、待审菜谱与规则开关的初始状态</p></div>' +
-      '<button class="mini no" data-act="reset">重置</button></div>' +
-      (RT.resetAsk ? '<div class="confirm-box"><p>确认重置？本机保存的打卡与审核结果都会回到初始演示状态。</p>' +
-        '<div class="row2"><button class="mini yes" data-act="resetyes">确认重置</button>' +
-        '<button class="mini ghost" data-act="resetno">取消</button></div></div>' : '') +
-      '<div class="dash"></div><p class="tiny">提醒开关、时间与打卡记录都保存在本机 localStorage（键 shike.state.v1），不会上传到任何服务器。</p></section>';
+      '<div class="setting-row"><div class="sm"><b>退出登录</b><p>账号与打卡记录仍保存在本浏览器，下次可再登录</p></div>' +
+      '<button class="mini no" data-act="logout">退出登录</button></div>' +
+      (E.storageOk() ? '' : '<p class="auth-warn">本地存储不可用（隐私模式）：本次记录不会保存。</p>') +
+      '<div class="dash"></div><p class="tiny">账号、资料、打卡与提醒都保存在本机 localStorage（键 shike.v2），不会上传到任何服务器；密码只保存加盐哈希。</p></section>';
   }
 
-  /* ---------- 营养师后台 ---------- */
+  /* ---------- 营养师后台（全局库） ---------- */
   function viewConsole() {
-    var st = E.recipeStats(state);
-    var list = state.recipes.slice().sort(function (a, b) {
+    var lib = db.library;
+    var st = E.recipeStats(lib);
+    var list = lib.recipes.slice().sort(function (a, b) {
       var w = { pending: 0, approved: 1, rejected: 2 };
       return w[a.status] - w[b.status];
     });
@@ -1323,13 +1653,13 @@ window.SHIKE.engine = (function () {
       ['ultraProcessBlock', '超加工食材拦截', '含超加工食材的菜品直接不进推荐']
     ].map(function (x) {
       return '<div class="rule-row"><div class="rr"><b>' + x[1] + '</b><p>' + x[2] + '</p></div>' +
-        '<button class="switch" role="switch" data-act="rule" data-key="' + x[0] + '" aria-checked="' + (state.rules[x[0]] ? 'true' : 'false') + '" aria-label="' + x[1] + '"></button></div>';
+        '<button class="switch" role="switch" data-act="rule" data-key="' + x[0] + '" aria-checked="' + (lib.rules[x[0]] ? 'true' : 'false') + '" aria-label="' + x[1] + '"></button></div>';
     }).join('');
     return '<section class="card"><div class="stats">' +
       '<div class="stat"><div class="sn">' + st.pending + '</div><div class="st">待审</div></div>' +
       '<div class="stat"><div class="sn">' + st.approved + '</div><div class="st">已通过</div></div>' +
       '<div class="stat"><div class="sn">' + st.rate + '%</div><div class="st">驳回率</div></div></div>' +
-      '<p class="tiny" style="margin-top:10px">共 ' + st.total + ' 张菜谱卡，其中驳回 ' + st.rejected + ' 张。</p></section>' +
+      '<p class="tiny" style="margin-top:10px">共 ' + st.total + ' 张菜谱卡，其中驳回 ' + st.rejected + ' 张。菜谱库与规则是全局的，所有账号共用。</p></section>' +
       '<section class="card"><h3 class="section-title">待审菜谱队列</h3>' + cards + '</section>' +
       '<section class="card"><h3 class="section-title">推荐规则</h3>' + rules + '</section>' +
       '<section class="card soft"><h3 class="section-title">说明</h3>' +
@@ -1339,22 +1669,18 @@ window.SHIKE.engine = (function () {
 
   /* ---------- 渲染 ---------- */
   var VIEWS = { today: viewToday, log: viewLog, pair: viewPair, week: viewWeek, remind: viewRemind, console: viewConsole };
-  var NAMES = { today: '今天', log: '记录', pair: '配餐', week: '周报', remind: '提醒', console: '营养师后台' };
   function paint() {
-    document.getElementById('topbar').innerHTML = topbar();
-    document.getElementById('view').innerHTML = '<h1 class="sr-only">食刻 · ' + (NAMES[RT.tab] || '今天') + '</h1>' +
-      (VIEWS[RT.tab] || viewToday)();
+    var u = user();
+    document.body.classList.toggle('auth-mode', !u);
+    document.getElementById('topbar').innerHTML = u ? topbar() : '';
+    document.getElementById('view').innerHTML = u
+      ? '<h1 class="sr-only">食刻 · ' + (NAMES[RT.tab] || '今天') + '</h1>' + (VIEWS[RT.tab] || viewToday)()
+      : viewAuth();
     document.getElementById('tabbar').innerHTML = tabbar();
   }
 
   /* ---------- 交互 ---------- */
-  function recipe(id) {
-    return state.recipes.filter(function (r) { return r.id === id; })[0] || null;
-  }
-  function findByMeal(meal, i, items) { return items[i] || null; }
-  function dayItems(meal) {
-    return (E.dayOf(state, RT.day).meals || {})[meal] || [];
-  }
+  function recipe(id) { return db.library.recipes.filter(function (r) { return r.id === id; })[0] || null; }
   function detail(it) {
     if (!it) return;
     var risk = E.riskOf(it).map(function (r) { return r.kind; }).join('/');
@@ -1364,42 +1690,44 @@ window.SHIKE.engine = (function () {
     var text = RT.logText.trim();
     if (!text) { toast('先写下这一餐吃了什么吧～'); return; }
     var groups = E.parseSentence(text);
-    if (!groups.length) { toast('没读懂这一句，试试「早餐：一杯咖啡+一个吐司」'); return; }
+    if (!groups.length) { toast('没读懂这一句，试试「午餐：米饭100g+鸡胸肉100g」'); return; }
     RT.draft = { groups: groups, saved: {}, sentence: text };
     paint();
     toast('已解析出 ' + groups.length + ' 个餐次，确认后点「记录成功」');
   }
   function saveDraft(meal) {
-    if (!RT.draft) return;
+    var u = user();
+    if (!u || !RT.draft) return;
     var g = RT.draft.groups.filter(function (x) { return x.meal === meal; })[0];
     if (!g) return;
     var key = E.dateKey(RT.day);
-    if (!state.days[key]) state.days[key] = E.emptyDay();
-    if (!state.days[key].meals) state.days[key].meals = {};
-    var old = state.days[key].meals[meal] || [];
-    state.days[key].meals[meal] = meal === '加餐' ? old.concat(g.items) : g.items.slice();
+    if (!u.days[key]) u.days[key] = E.emptyDay();
+    if (!u.days[key].meals) u.days[key].meals = {};
+    var old = u.days[key].meals[meal] || [];
+    u.days[key].meals[meal] = meal === '加餐' ? old.concat(g.items) : g.items.slice();
     RT.draft.saved[meal] = true;
-    save();
+    persist();
     paint();
-    var t = E.dayTotals(state.days[key]);
+    var t = E.dayTotals(u.days[key]);
     toast('记录成功，' + E.dayLabel(RT.day) + '合计 ' + E.r0(t.kcal) + ' 千卡');
   }
   function toggleRule(key) {
-    state.rules[key] = !state.rules[key];
-    save();
+    db.library.rules[key] = !db.library.rules[key];
+    persist();
     paint();
-    toast('已' + (state.rules[key] ? '开启' : '关闭') + '该推荐规则');
+    toast('已' + (db.library.rules[key] ? '开启' : '关闭') + '该推荐规则');
   }
   function toggleNotify() {
-    var supported = ('Notification' in window);
-    if (!supported) { toast('当前浏览器不支持系统通知，测试提醒会用页面提示'); return; }
-    if (state.notify && window.Notification.permission === 'granted') {
-      state.notify = false; save(); paint();
+    var u = user();
+    if (!u) return;
+    if (!('Notification' in window)) { toast('当前浏览器不支持系统通知，测试提醒会用页面提示'); return; }
+    if (u.notify && window.Notification.permission === 'granted') {
+      u.notify = false; persist(); paint();
       toast('已关闭系统通知提醒（浏览器权限仍保留，可在站点设置里改）');
       return;
     }
     if (window.Notification.permission === 'granted') {
-      state.notify = true; save(); paint(); toast('系统通知已开启');
+      u.notify = true; persist(); paint(); toast('系统通知已开启');
       return;
     }
     if (window.Notification.permission === 'denied') {
@@ -1410,8 +1738,8 @@ window.SHIKE.engine = (function () {
       var p = window.Notification.requestPermission();
       if (p && typeof p.then === 'function') {
         p.then(function (res) {
-          state.notify = res === 'granted';
-          save(); paint();
+          u.notify = res === 'granted';
+          persist(); paint();
           toast(res === 'granted' ? '系统通知已开启' : '没有拿到通知权限，测试提醒仍会用页面提示');
         })['catch'](function () {
           toast('通知权限申请失败，测试提醒仍可用页面提示');
@@ -1424,16 +1752,36 @@ window.SHIKE.engine = (function () {
     }
   }
   function testReminder() {
-    var on = E.MEALS.filter(function (m) { return state.reminders[m] && state.reminders[m].on; });
+    var u = user();
+    if (!u) return;
+    var on = E.MEALS.filter(function (m) { return u.reminders[m] && u.reminders[m].on; });
     if (!on.length) { toast('还没有开启任何提醒，先把至少一餐的开关打开吧'); return; }
     var first = on[0];
-    toast('测试提醒 · ' + first + ' ' + state.reminders[first].time + ' 到点啦，记得好好吃饭 🍚');
+    toast('测试提醒 · ' + first + ' ' + u.reminders[first].time + ' 到点啦，记得好好吃饭 🍚');
+  }
+  /* 表单输入：不重绘，值写进 FORM；提交时再从 DOM 兜一次（兼容自动填充） */
+  var AUTH_INPUT = { lu: 'lu', lp: 'lp', ru: 'ru', rn: 'rn', rp: 'rp', rp2: 'rp2', aged: 'age', hgt: 'height', wgt: 'weight' };
+  function syncAuthForm() {
+    Object.keys(AUTH_INPUT).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el && typeof el.value === 'string') FORM[AUTH_INPUT[id]] = el.value;
+    });
+  }
+  function readAuth(id, key) {
+    var el = document.getElementById(id);
+    if (el && typeof el.value === 'string') FORM[key] = el.value;
+    return FORM[key] || '';
   }
 
   function onClick(ev) {
     var btn = ev.target.closest('[data-act]');
     if (!btn) return;
     var act = btn.getAttribute('data-act');
+    if (act === 'authtab') { syncAuthForm(); RT.authTab = btn.getAttribute('data-v'); RT.authErr = ''; paint(); return; }
+    if (act === 'pick') { syncAuthForm(); FORM[btn.getAttribute('data-f')] = btn.getAttribute('data-v'); paint(); return; }
+    if (act === 'login') { doLogin(); return; }
+    if (act === 'register') { doRegister(); return; }
+    if (act === 'logout') { doLogout(); return; }
     if (act === 'tab') { go(btn.getAttribute('data-tab')); return; }
     if (act === 'console') { RT.tab = 'console'; RT.rejectId = ''; paint(); return; }
     if (act === 'back') { go('today'); return; }
@@ -1441,7 +1789,9 @@ window.SHIKE.engine = (function () {
     if (act === 'day') { RT.day = parseInt(btn.getAttribute('data-day'), 10) || 0; RT.dayPick = false; paint(); return; }
     if (act === 'dash') { RT.dash = btn.getAttribute('data-v'); paint(); return; }
     if (act === 'food') {
-      detail(findByMeal(btn.getAttribute('data-meal'), parseInt(btn.getAttribute('data-i'), 10), dayItems(btn.getAttribute('data-meal'))));
+      var day = E.dayOf(user(), RT.day);
+      var items = (day.meals || {})[btn.getAttribute('data-meal')] || [];
+      detail(items[parseInt(btn.getAttribute('data-i'), 10)]);
       return;
     }
     if (act === 'dfood') {
@@ -1450,18 +1800,16 @@ window.SHIKE.engine = (function () {
       if (gi) detail(gi.items[parseInt(btn.getAttribute('data-i'), 10)]);
       return;
     }
-    if (act === 'exercise') {
-      var key = E.dateKey(RT.day);
-      if (!state.days[key]) state.days[key] = E.emptyDay();
-      state.days[key].ex = (state.days[key].ex || 0) + parseInt(btn.getAttribute('data-kcal'), 10);
-      save(); paint();
-      toast('已记录运动，消耗 +' + btn.getAttribute('data-kcal') + ' 千卡');
-      return;
-    }
-    if (act === 'exclear') {
-      var k2 = E.dateKey(RT.day);
-      if (!state.days[k2]) state.days[k2] = E.emptyDay();
-      state.days[k2].ex = 0; save(); paint(); toast('已清空今天的运动记录');
+    if (act === 'exercise' || act === 'exclear') {
+      var u2 = user(), k = E.dateKey(RT.day);
+      if (!u2) return;
+      if (!u2.days[k]) u2.days[k] = E.emptyDay();
+      if (act === 'exclear') {
+        u2.days[k].ex = 0; persist(); paint(); toast('已清空今天的运动记录');
+      } else {
+        u2.days[k].ex = (u2.days[k].ex || 0) + parseInt(btn.getAttribute('data-kcal'), 10);
+        persist(); paint(); toast('已记录运动，消耗 +' + btn.getAttribute('data-kcal') + ' 千卡');
+      }
       return;
     }
     if (act === 'tpl') { RT.logText = btn.getAttribute('data-txt'); paint(); return; }
@@ -1475,7 +1823,7 @@ window.SHIKE.engine = (function () {
     if (act === 'save') { saveDraft(btn.getAttribute('data-meal')); return; }
     if (act === 'pairfill') {
       RT.pairText = btn.getAttribute('data-txt');
-      RT.pair = E.pairPlan(RT.pairText, state.rules);
+      RT.pair = E.pairPlan(RT.pairText, db.library.rules, tg());
       paint();
       return;
     }
@@ -1483,34 +1831,26 @@ window.SHIKE.engine = (function () {
       var input = document.getElementById('pairText');
       var val = (input ? input.value : RT.pairText).trim() || '炸鸡';
       RT.pairText = val;
-      RT.pair = E.pairPlan(val, state.rules);
+      RT.pair = E.pairPlan(val, db.library.rules, tg());
       paint();
       toast('已按「主食＋蛋白＋蔬菜＋水果」生成配餐：' + RT.pair.main.name);
       return;
     }
     if (act === 'rtoggle') {
-      var m = btn.getAttribute('data-meal');
-      state.reminders[m].on = !state.reminders[m].on;
-      save(); paint();
-      toast(m + '提醒已' + (state.reminders[m].on ? '开启（' + state.reminders[m].time + '）' : '关闭'));
+      var u3 = user(), m = btn.getAttribute('data-meal');
+      if (!u3) return;
+      u3.reminders[m].on = !u3.reminders[m].on;
+      persist(); paint();
+      toast(m + '提醒已' + (u3.reminders[m].on ? '开启（' + u3.reminders[m].time + '）' : '关闭'));
       return;
     }
     if (act === 'testtoast') { testReminder(); return; }
     if (act === 'notify') { toggleNotify(); return; }
-    if (act === 'reset') { RT.resetAsk = true; paint(); return; }
-    if (act === 'resetno') { RT.resetAsk = false; paint(); return; }
-    if (act === 'resetyes') {
-      state = E.resetState();
-      state.notify = false;
-      RT.draft = null; RT.pair = null; RT.logText = ''; RT.pairText = ''; RT.resetAsk = false; RT.day = 0;
-      save(); paint(); toast('演示数据已重置');
-      return;
-    }
     if (act === 'approve') {
       var r = recipe(btn.getAttribute('data-id'));
       if (!r) return;
       r.status = 'approved'; r.rejectReason = '';
-      save(); paint();
+      persist(); paint();
       toast('已通过「' + r.dish + '」，配餐徽标已更新');
       return;
     }
@@ -1522,26 +1862,29 @@ window.SHIKE.engine = (function () {
       r2.status = 'rejected';
       r2.rejectReason = btn.getAttribute('data-why');
       RT.rejectId = '';
-      save(); paint();
+      persist(); paint();
       toast('已驳回「' + r2.dish + '」：' + r2.rejectReason);
       return;
     }
     if (act === 'rule') { toggleRule(btn.getAttribute('data-key')); return; }
   }
   function onInput(ev) {
-    if (ev.target.id === 'logText') RT.logText = ev.target.value;
-    if (ev.target.id === 'pairText') RT.pairText = ev.target.value;
+    var id = ev.target.id;
+    if (id === 'logText') { RT.logText = ev.target.value; return; }
+    if (id === 'pairText') { RT.pairText = ev.target.value; return; }
+    if (AUTH_INPUT[id]) FORM[AUTH_INPUT[id]] = ev.target.value;
   }
   function onChange(ev) {
     var m = ev.target.getAttribute && ev.target.getAttribute('data-rtime');
     if (!m) return;
-    state.reminders[m].time = ev.target.value || state.reminders[m].time;
-    save();
-    toast(m + '提醒时间已改为 ' + state.reminders[m].time);
+    var u = user();
+    if (!u) return;
+    u.reminders[m].time = ev.target.value || u.reminders[m].time;
+    persist();
+    toast(m + '提醒时间已改为 ' + u.reminders[m].time);
   }
   function boot() {
-    state = E.loadState();
-    if (typeof state.notify !== 'boolean') state.notify = false;
+    db = E.loadDb();
     document.addEventListener('click', onClick);
     document.addEventListener('input', onInput);
     document.addEventListener('change', onChange);
